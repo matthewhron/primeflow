@@ -1,0 +1,107 @@
+{
+  "name": "prime-flow",
+  "version": "1.0.0",
+  "description": "Prime Flow ($FLOW) - Smart payment routing SDK for multi-region PSP optimization via Layer-403, with analytics, fraud detection, subscriptions, and more",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./analytics": {
+      "import": "./dist/esm/analytics/index.js",
+      "require": "./dist/cjs/analytics/index.js"
+    },
+    "./fraud": {
+      "import": "./dist/esm/fraud/index.js",
+      "require": "./dist/cjs/fraud/index.js"
+    },
+    "./subscriptions": {
+      "import": "./dist/esm/subscriptions/index.js",
+      "require": "./dist/cjs/subscriptions/index.js"
+    },
+    "./batch": {
+      "import": "./dist/esm/batch/index.js",
+      "require": "./dist/cjs/batch/index.js"
+    },
+    "./validators": {
+      "import": "./dist/esm/validators/index.js",
+      "require": "./dist/cjs/validators/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run build:esm && npm run build:cjs && npm run build:types",
+    "build:esm": "tsc -p tsconfig.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:types": "tsc -p tsconfig.json --declaration --emitDeclarationOnly --outDir dist/types",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build",
+    "docs": "typedoc --out docs src/index.ts",
+    "example:analytics": "npx ts-node examples/analytics-demo.ts",
+    "example:subscriptions": "npx ts-node examples/subscriptions-demo.ts",
+    "example:fraud": "npx ts-node examples/fraud-detection-demo.ts"
+  },
+  "keywords": [
+    "payments",
+    "payment-routing",
+    "psp",
+    "fintech",
+    "geo-routing",
+    "payment-gateway",
+    "multi-region",
+    "acquirer",
+    "payment-optimization",
+    "fraud-detection",
+    "subscriptions",
+    "recurring-payments",
+    "payment-analytics",
+    "circuit-breaker",
+    "rate-limiting",
+    "webhooks",
+    "idempotency"
+  ],
+  "author": "Your Name <you@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yourusername/prime-flow.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/prime-flow/issues"
+  },
+  "homepage": "https://github.com/yourusername/prime-flow#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.25",
+    "@types/node": "^20.10.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.55.0",
+    "ts-node": "^10.9.0",
+    "typedoc": "^0.25.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "express": "^4.18.0"
+  },
+  "peerDependenciesMeta": {
+    "express": {
+      "optional": true
+    }
+  }
+}

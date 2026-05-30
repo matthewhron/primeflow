@@ -1,0 +1,42 @@
+# Source files (use dist instead)
+src/
+tests/
+examples/
+
+# Config files
+tsconfig*.json
+vitest.config.ts
+.eslintrc*
+.prettierrc*
+
+# Development files
+.github/
+.vscode/
+.idea/
+
+# Documentation source
+docs/
+
+# Build artifacts
+coverage/
+.nyc_output/
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env*
+
+# Misc
+*.tgz
+.eslintcache
+CONTRIBUTING.md
