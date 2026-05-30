@@ -1,0 +1,540 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Layer-403 API Specification",
+  "description": "JSON Schema for Layer-403 gateway API used by PrimeFlow",
+  
+  "definitions": {
+    "PaymentIntent": {
+      "type": "object",
+      "required": ["id", "amount", "currency", "paymentMethod"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique payment intent identifier"
+        },
+        "amount": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Payment amount"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code"
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["card", "bank_transfer", "wallet", "sepa", "ach", "apple_pay", "google_pay", "pix", "boleto"]
+        },
+        "userCountry": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$",
+          "description": "ISO 3166-1 alpha-2 country code"
+        },
+        "userIp": {
+          "type": "string",
+          "format": "ipv4"
+        },
+        "merchantCountry": {
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "cardToken": {
+          "type": "string"
+        },
+        "bankToken": {
+          "type": "string"
+        },
+        "walletId": {
+          "type": "string"
+        },
+        "kycToken": {
+          "type": "string"
+        },
+        "customerEmail": {
+          "type": "string",
+          "format": "email"
+        },
+        "customerName": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "statementDescriptor": {
+          "type": "string",
+          "maxLength": 22
+        },
+        "returnUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "webhookUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    
+    "FeeBreakdown": {
+      "type": "object",
+      "required": ["percentFee", "fixedFee", "fxFee"],
+      "properties": {
+        "percentFee": {
+          "type": "number",
+          "description": "Percentage fee (e.g., 2.5 for 2.5%)"
+        },
+        "fixedFee": {
+          "type": "number",
+          "description": "Fixed fee in target currency"
+        },
+        "fxFee": {
+          "type": "number",
+          "description": "Foreign exchange fee"
+        },
+        "networkFee": {
+          "type": "number"
+        },
+        "crossBorderFee": {
+          "type": "number"
+        }
+      }
+    },
+    
+    "RegionLimits": {
+      "type": "object",
+      "required": ["min", "max"],
+      "properties": {
+        "min": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max": {
+          "type": "number"
+        },
+        "remainingDaily": {
+          "type": "number"
+        },
+        "remainingMonthly": {
+          "type": "number"
+        },
+        "perTransaction": {
+          "type": "number"
+        }
+      }
+    },
+    
+    "RegionQuote": {
+      "type": "object",
+      "required": ["region", "routerId", "totalCost", "feeBreakdown", "limits", "score", "available"],
+      "properties": {
+        "region": {
+          "type": "string"
+        },
+        "routerId": {
+          "type": "string"
+        },
+        "routerName": {
+          "type": "string"
+        },
+        "totalCost": {
+          "type": "number"
+        },
+        "feeBreakdown": {
+          "$ref": "#/definitions/FeeBreakdown"
+        },
+        "limits": {
+          "$ref": "#/definitions/RegionLimits"
+        },
+        "successRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "latencyMs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "score": {
+          "type": "number"
+        },
+        "reasons": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "unavailableReason": {
+          "type": "string"
+        },
+        "supportedMethods": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "regionCurrency": {
+          "type": "string"
+        },
+        "fxRate": {
+          "type": "number"
+        },
+        "quotedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "validForSec": {
+          "type": "integer"
+        }
+      }
+    },
+    
+    "Error": {
+      "type": "object",
+      "required": ["code", "message"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "enum": [
+            "REGION_NOT_ALLOWED",
+            "REGION_NOT_FOUND",
+            "NO_AVAILABLE_REGIONS",
+            "REGION_LIMIT_EXCEEDED",
+            "METHOD_NOT_SUPPORTED",
+            "PAYMENT_DECLINED",
+            "INSUFFICIENT_FUNDS",
+            "CARD_EXPIRED",
+            "INVALID_CARD",
+            "FRAUD_DETECTED",
+            "AUTHENTICATION_REQUIRED",
+            "AUTHENTICATION_FAILED",
+            "TIMEOUT",
+            "NETWORK_ERROR",
+            "SERVICE_UNAVAILABLE",
+            "RATE_LIMITED",
+            "INTERNAL_ERROR",
+            "INVALID_INTENT",
+            "MISSING_REQUIRED_FIELD",
+            "INVALID_AMOUNT",
+            "INVALID_CURRENCY",
+            "INVALID_TOKEN",
+            "SANCTIONS_BLOCKED",
+            "KYC_REQUIRED",
+            "COMPLIANCE_REJECTED",
+            "LAYER403_ERROR",
+            "INVALID_SIGNATURE",
+            "AUTHENTICATION_ERROR",
+            "UNKNOWN_ERROR"
+          ]
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object"
+        }
+      }
+    }
+  },
+  
+  "endpoints": {
+    "GET /regions": {
+      "description": "List all available regions",
+      "response": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": { "type": "string" },
+                "name": { "type": "string" },
+                "countries": { "type": "array", "items": { "type": "string" } },
+                "currencies": { "type": "array", "items": { "type": "string" } },
+                "methods": { "type": "array", "items": { "type": "string" } },
+                "active": { "type": "boolean" },
+                "limits": { "$ref": "#/definitions/RegionLimits" },
+                "baseFees": { "$ref": "#/definitions/FeeBreakdown" },
+                "successRate": { "type": "number" },
+                "avgLatencyMs": { "type": "integer" }
+              }
+            }
+          },
+          "requestId": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    
+    "POST /quote": {
+      "description": "Get payment quotes for all regions",
+      "request": {
+        "type": "object",
+        "required": ["intent"],
+        "properties": {
+          "intent": { "$ref": "#/definitions/PaymentIntent" },
+          "regions": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Filter to specific regions"
+          },
+          "includeUnavailable": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "response": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "quotes": {
+                "type": "array",
+                "items": { "$ref": "#/definitions/RegionQuote" }
+              }
+            }
+          },
+          "error": { "$ref": "#/definitions/Error" },
+          "requestId": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    
+    "POST /pay": {
+      "description": "Execute payment in specified region",
+      "headers": {
+        "X-PrimeFlow-Region": {
+          "type": "string",
+          "required": true,
+          "description": "Target region for payment"
+        },
+        "X-Idempotency-Key": {
+          "type": "string",
+          "required": true,
+          "description": "Unique key for request deduplication"
+        }
+      },
+      "request": {
+        "type": "object",
+        "required": ["intent", "region", "routerId", "idempotencyKey"],
+        "properties": {
+          "intent": { "$ref": "#/definitions/PaymentIntent" },
+          "region": { "type": "string" },
+          "routerId": { "type": "string" },
+          "idempotencyKey": { "type": "string" }
+        }
+      },
+      "response": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "intentId": { "type": "string" },
+              "status": {
+                "type": "string",
+                "enum": ["succeeded", "failed", "pending", "requires_action", "processing", "cancelled"]
+              },
+              "regionUsed": { "type": "string" },
+              "routerId": { "type": "string" },
+              "providerPaymentId": { "type": "string" },
+              "costApplied": { "type": "number" },
+              "amountCharged": { "type": "number" },
+              "currencyCharged": { "type": "string" },
+              "processedAt": { "type": "string", "format": "date-time" },
+              "nextAction": {
+                "type": "object",
+                "properties": {
+                  "type": { "type": "string", "enum": ["redirect", "three_d_secure", "display_qr", "await_webhook"] },
+                  "redirectUrl": { "type": "string", "format": "uri" },
+                  "qrCodeData": { "type": "string" },
+                  "instructions": { "type": "string" },
+                  "expiresInSec": { "type": "integer" }
+                }
+              },
+              "receiptUrl": { "type": "string", "format": "uri" },
+              "authCode": { "type": "string" }
+            }
+          },
+          "error": { "$ref": "#/definitions/Error" },
+          "requestId": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    
+    "POST /refund": {
+      "description": "Process refund for a payment",
+      "headers": {
+        "X-PrimeFlow-Region": {
+          "type": "string",
+          "required": true
+        },
+        "X-Idempotency-Key": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "request": {
+        "type": "object",
+        "required": ["refundIntent", "region", "idempotencyKey"],
+        "properties": {
+          "refundIntent": {
+            "type": "object",
+            "required": ["paymentIntentId", "providerPaymentId"],
+            "properties": {
+              "paymentIntentId": { "type": "string" },
+              "providerPaymentId": { "type": "string" },
+              "amount": { "type": "number" },
+              "reason": {
+                "type": "string",
+                "enum": ["requested_by_customer", "duplicate", "fraudulent", "product_not_received", "product_unacceptable", "other"]
+              },
+              "metadata": { "type": "object" }
+            }
+          },
+          "region": { "type": "string" },
+          "idempotencyKey": { "type": "string" }
+        }
+      },
+      "response": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "object",
+            "properties": {
+              "paymentIntentId": { "type": "string" },
+              "refundId": { "type": "string" },
+              "status": { "type": "string", "enum": ["succeeded", "pending", "failed"] },
+              "amount": { "type": "number" },
+              "currency": { "type": "string" },
+              "regionUsed": { "type": "string" },
+              "processedAt": { "type": "string", "format": "date-time" }
+            }
+          },
+          "error": { "$ref": "#/definitions/Error" },
+          "requestId": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    
+    "POST /webhook/verify": {
+      "description": "Verify webhook signature (internal use)",
+      "request": {
+        "type": "object",
+        "required": ["payload", "signature", "timestamp"],
+        "properties": {
+          "payload": { "type": "string" },
+          "signature": { "type": "string" },
+          "timestamp": { "type": "string" }
+        }
+      },
+      "response": {
+        "type": "object",
+        "properties": {
+          "valid": { "type": "boolean" }
+        }
+      }
+    }
+  },
+  
+  "webhookEvents": {
+    "payment.succeeded": {
+      "description": "Payment was successful",
+      "data": {
+        "intentId": "string",
+        "providerPaymentId": "string",
+        "amount": "number",
+        "currency": "string",
+        "region": "string",
+        "routerId": "string",
+        "metadata": "object"
+      }
+    },
+    "payment.failed": {
+      "description": "Payment failed",
+      "data": {
+        "intentId": "string",
+        "error": { "code": "string", "message": "string" },
+        "region": "string",
+        "metadata": "object"
+      }
+    },
+    "payment.pending": {
+      "description": "Payment is pending (async processing)",
+      "data": {
+        "intentId": "string",
+        "region": "string"
+      }
+    },
+    "payment.refunded": {
+      "description": "Payment was refunded",
+      "data": {
+        "intentId": "string",
+        "refundId": "string",
+        "amount": "number",
+        "currency": "string"
+      }
+    },
+    "refund.succeeded": {
+      "description": "Refund was successful",
+      "data": {
+        "intentId": "string",
+        "refundId": "string",
+        "amount": "number",
+        "currency": "string"
+      }
+    },
+    "refund.failed": {
+      "description": "Refund failed",
+      "data": {
+        "intentId": "string",
+        "refundId": "string",
+        "error": { "code": "string", "message": "string" }
+      }
+    }
+  },
+  
+  "authentication": {
+    "description": "All requests must include authentication headers",
+    "headers": {
+      "X-PrimeFlow-Key": {
+        "type": "string",
+        "required": true,
+        "description": "API key"
+      },
+      "X-PrimeFlow-Timestamp": {
+        "type": "string",
+        "required": true,
+        "format": "date-time",
+        "description": "Request timestamp in ISO format"
+      },
+      "X-PrimeFlow-Nonce": {
+        "type": "string",
+        "required": true,
+        "description": "Unique nonce for replay protection"
+      },
+      "X-PrimeFlow-Signature": {
+        "type": "string",
+        "required": true,
+        "description": "HMAC-SHA256 signature of request"
+      }
+    },
+    "signaturePayload": {
+      "description": "Signature is computed over: METHOD\\nPATH\\nTIMESTAMP\\nNONCE\\n[BODY_HASH]",
+      "example": "POST\n/pay\n2024-01-15T12:00:00.000Z\nabc123\nd2d2d2..."
+    }
+  }
+}
