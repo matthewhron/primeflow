@@ -2,10 +2,11 @@
 
 > **Route smarter. Settle faster.** — One SDK. Every region. Prime routing on Solana.
 
+[![CI](https://github.com/matthewhron/primeflow/actions/workflows/ci.yml/badge.svg)](https://github.com/matthewhron/primeflow/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
-[![Version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)](https://github.com/yourusername/prime-flow)
+[![Version](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)](https://github.com/matthewhron/primeflow)
 
 ## Overview
 
